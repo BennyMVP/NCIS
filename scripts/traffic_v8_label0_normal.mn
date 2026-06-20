@@ -1,0 +1,4 @@
+h1 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8888 --duration 55 --pps-min 3 --pps-max 20 --payload-min 80 --payload-max 250 --start-delay 1 --burst-prob 0.02 > /tmp/h1_label0.log 2>&1 &
+h2 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8889 --duration 55 --pps-min 3 --pps-max 18 --payload-min 80 --payload-max 250 --start-delay 2 --burst-prob 0.02 > /tmp/h2_label0.log 2>&1 &
+h8 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8890 --duration 55 --pps-min 5 --pps-max 25 --payload-min 100 --payload-max 300 --start-delay 4 --burst-prob 0.03 > /tmp/h8_label0.log 2>&1 &
+h5 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8891 --duration 55 --pps-min 2 --pps-max 15 --payload-min 80 --payload-max 220 --start-delay 6 --burst-prob 0.01 > /tmp/h5_label0.log 2>&1 &

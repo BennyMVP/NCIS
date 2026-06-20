@@ -1,0 +1,14 @@
+h4 iperf3 -s > /tmp/h4_iperf_v8.log 2>&1 &
+
+h1 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8888 --duration 60 --pps-min 5 --pps-max 25 --payload-min 80 --payload-max 300 --start-delay 1 --burst-prob 0.03 > /tmp/h1_udp_legit_v8.log 2>&1 &
+h2 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8889 --duration 60 --pps-min 5 --pps-max 20 --payload-min 80 --payload-max 250 --start-delay 3 --burst-prob 0.02 > /tmp/h2_udp_legit_v8.log 2>&1 &
+h8 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8890 --duration 60 --pps-min 8 --pps-max 30 --payload-min 100 --payload-max 350 --start-delay 5 --burst-prob 0.04 > /tmp/h8_udp_legit_v8.log 2>&1 &
+
+h3 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9999 --duration 60 --pps-min 40 --pps-max 160 --payload-min 300 --payload-max 900 --start-delay 6 --burst-prob 0.15 --burst-min 10 --burst-max 45 > /tmp/h3_udp_attack_v8.log 2>&1 &
+h5 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9998 --duration 60 --pps-min 35 --pps-max 140 --payload-min 250 --payload-max 850 --start-delay 8 --burst-prob 0.12 --burst-min 8 --burst-max 40 > /tmp/h5_udp_attack_v8.log 2>&1 &
+h6 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9997 --duration 60 --pps-min 50 --pps-max 180 --payload-min 300 --payload-max 900 --start-delay 10 --burst-prob 0.15 --burst-min 10 --burst-max 50 > /tmp/h6_udp_attack_v8.log 2>&1 &
+h7 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9996 --duration 60 --pps-min 45 --pps-max 170 --payload-min 250 --payload-max 850 --start-delay 12 --burst-prob 0.14 --burst-min 10 --burst-max 45 > /tmp/h7_udp_attack_v8.log 2>&1 &
+h9 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9995 --duration 60 --pps-min 35 --pps-max 150 --payload-min 250 --payload-max 800 --start-delay 14 --burst-prob 0.13 --burst-min 8 --burst-max 40 > /tmp/h9_udp_attack_v8.log 2>&1 &
+h10 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9994 --duration 60 --pps-min 45 --pps-max 170 --payload-min 300 --payload-max 900 --start-delay 16 --burst-prob 0.15 --burst-min 10 --burst-max 45 > /tmp/h10_udp_attack_v8.log 2>&1 &
+h11 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9993 --duration 60 --pps-min 40 --pps-max 160 --payload-min 250 --payload-max 850 --start-delay 18 --burst-prob 0.13 --burst-min 8 --burst-max 40 > /tmp/h11_udp_attack_v8.log 2>&1 &
+h12 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9992 --duration 60 --pps-min 50 --pps-max 190 --payload-min 300 --payload-max 950 --start-delay 20 --burst-prob 0.16 --burst-min 12 --burst-max 50 > /tmp/h12_udp_attack_v8.log 2>&1 &
