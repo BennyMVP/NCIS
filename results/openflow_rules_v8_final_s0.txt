@@ -1,9 +1,0 @@
-OFPST_FLOW reply (OF1.3) (xid=0x2):
- cookie=0x0, duration=80.152s, table=0, n_packets=169, n_bytes=119280, hard_timeout=300, priority=200,ip,nw_src=10.0.0.3,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=74.026s, table=0, n_packets=1, n_bytes=399, hard_timeout=300, priority=200,ip,nw_src=10.0.0.7,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=72.245s, table=0, n_packets=0, n_bytes=0, hard_timeout=300, priority=200,ip,nw_src=10.0.0.8,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=69.907s, table=0, n_packets=423, n_bytes=246307, hard_timeout=300, priority=200,ip,nw_src=10.0.0.11,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=65.961s, table=0, n_packets=1, n_bytes=894, hard_timeout=300, priority=200,ip,nw_src=10.0.0.10,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=63.891s, table=0, n_packets=0, n_bytes=0, hard_timeout=300, priority=200,ip,nw_src=10.0.0.9,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=61.911s, table=0, n_packets=3, n_bytes=1833, hard_timeout=300, priority=200,ip,nw_src=10.0.0.12,nw_dst=10.0.0.4 actions=drop
- cookie=0x0, duration=129.083s, table=0, n_packets=675, n_bytes=59838, priority=0 actions=CONTROLLER:65535
