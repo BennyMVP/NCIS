@@ -1,0 +1,30 @@
+{
+  "model_name": "rf_core_access_ml",
+  "feature_columns": [
+    "ip_proto",
+    "delta_packets",
+    "delta_bytes",
+    "packet_rate",
+    "byte_rate",
+    "burst_score",
+    "dst_unique_src_count",
+    "dst_total_packet_rate",
+    "dst_total_byte_rate",
+    "dst_active_flow_count",
+    "dst_std_packet_rate",
+    "dst_cv_packet_rate",
+    "is_tcp",
+    "is_udp",
+    "flow_to_dst_ratio",
+    "pps_per_source"
+  ],
+  "threshold": 0.4,
+  "metrics": {
+    "threshold": 0.4,
+    "accuracy": 0.9719387755102041,
+    "precision": 0.9383259911894273,
+    "recall": 0.988399071925754,
+    "f1": 0.9627118644067797,
+    "fbeta": 0.977961432506887
+  }
+}
