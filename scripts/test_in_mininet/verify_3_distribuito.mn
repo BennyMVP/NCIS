@@ -1,0 +1,38 @@
+py "print('##############################################################')"
+py "print('###  TEST 3 - ATTACCO DISTRIBUITO (h3, h5, h9, h12)        ###')"
+py "print('###  Sfondo legittimo: h1, h2, h8                          ###')"
+py "print('###  Atteso: bloccati i 4 attaccanti, legittimi 0% loss    ###')"
+py "print('##############################################################')"
+h4 python3 /tmp/udp_sink.py --ports 8800-8899,9900-9999 > /tmp/h4_sink.log 2>&1 &
+py "import time; time.sleep(1)"
+h1 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8800 --duration 95 --pps-min 5 --pps-max 34 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 14 --sleep-jitter 0.03 &
+h2 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8801 --duration 95 --pps-min 6 --pps-max 38 --payload-min 200 --payload-max 1400 --burst-prob 0.07 --burst-min 4 --burst-max 14 --sleep-jitter 0.035 &
+h8 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8804 --duration 95 --pps-min 5 --pps-max 32 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 12 --sleep-jitter 0.045 &
+h3 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9920 --duration 95 --pps-min 12 --pps-max 38 --payload-min 300 --payload-max 800 --burst-prob 0.02 --burst-min 2 --burst-max 5 --sleep-jitter 0.002 &
+h5 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9921 --duration 95 --pps-min 10 --pps-max 36 --payload-min 300 --payload-max 800 --burst-prob 0.01 --burst-min 2 --burst-max 5 --sleep-jitter 0.0015 &
+h9 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9922 --duration 95 --pps-min 12 --pps-max 38 --payload-min 300 --payload-max 800 --burst-prob 0.02 --burst-min 2 --burst-max 5 --sleep-jitter 0.0025 &
+h12 timeout 100 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9923 --duration 95 --pps-min 11 --pps-max 37 --payload-min 300 --payload-max 800 --burst-prob 0.00 --burst-min 2 --burst-max 5 --sleep-jitter 0.001 &
+py "print('... attacco distribuito + sfondo legittimo, attendo mitigazione 45s ...')"
+sh sleep 45
+py "print('--- PING ---')"
+py "print('--- h3 (ATTACCANTE) atteso 100% loss ---')"
+h3 ping -c 3 -W 2 10.0.0.4
+py "print('--- h5 (ATTACCANTE) atteso 100% loss ---')"
+h5 ping -c 3 -W 2 10.0.0.4
+py "print('--- h9 (ATTACCANTE) atteso 100% loss ---')"
+h9 ping -c 3 -W 2 10.0.0.4
+py "print('--- h12 (ATTACCANTE) atteso 100% loss ---')"
+h12 ping -c 3 -W 2 10.0.0.4
+py "print('--- h1 (LEGITTIMO) atteso 0% loss ---')"
+h1 ping -c 3 -W 2 10.0.0.4
+py "print('--- h2 (LEGITTIMO) atteso 0% loss ---')"
+h2 ping -c 3 -W 2 10.0.0.4
+py "print('--- h8 (LEGITTIMO) atteso 0% loss ---')"
+h8 ping -c 3 -W 2 10.0.0.4
+py "print('--- REGOLE DROP (attese: 10.0.0.3, 10.0.0.5, 10.0.0.9, 10.0.0.12) ---')"
+sh ovs-ofctl -O OpenFlow13 dump-flows s1 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s2 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s3 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s4 | grep -i drop
+py "print('=== FINE TEST 3 ===')"
+

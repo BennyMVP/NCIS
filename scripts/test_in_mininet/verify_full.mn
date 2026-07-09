@@ -1,0 +1,100 @@
+py "print(' ')"
+py "print('##############################################################')"
+py "print('###  FASE 1  -  SOLO TRAFFICO LEGITTIMO  (atteso: 0 blocchi) ##')"
+py "print('##############################################################')"
+h4 python3 /tmp/udp_sink.py --ports 8800-8899,9900-9999 > /tmp/h4_sink.log 2>&1 &
+py "import time; time.sleep(1)"
+h1 timeout 45 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8800 --duration 40 --pps-min 5 --pps-max 34 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 14 --sleep-jitter 0.03 &
+h2 timeout 45 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8801 --duration 40 --pps-min 6 --pps-max 38 --payload-min 200 --payload-max 1400 --burst-prob 0.07 --burst-min 4 --burst-max 14 --sleep-jitter 0.035 &
+h8 timeout 45 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8804 --duration 40 --pps-min 5 --pps-max 32 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 12 --sleep-jitter 0.045 &
+py "print('... traffico legittimo in corso per 40s, attendo ...')"
+sh sleep 40
+py "print('--- PING DI CONTROLLO FASE 1 (tutti attesi 0% loss) ---')"
+py "print('--- h1 (LEGITTIMO) ---')"
+h1 ping -c 2 -W 2 10.0.0.4
+py "print('--- h2 (LEGITTIMO) ---')"
+h2 ping -c 2 -W 2 10.0.0.4
+py "print('--- h8 (LEGITTIMO) ---')"
+h8 ping -c 2 -W 2 10.0.0.4
+py "print('--- regole drop dopo FASE 1 (attese NESSUNA) ---')"
+sh ovs-ofctl -O OpenFlow13 dump-flows s1 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s2 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s3 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s4 | grep -i drop
+py "print('=== FINE FASE 1. Fermo il traffico e pausa 15s ===')"
+h1 pkill -f udp_realistic_sender
+h2 pkill -f udp_realistic_sender
+h8 pkill -f udp_realistic_sender
+sh sleep 15
+
+py "print(' ')"
+py "print('##############################################################')"
+py "print('###  FASE 2  -  UN SOLO ATTACCANTE VOLUMETRICO (h3)  #########')"
+py "print('###  atteso: h3 bloccato, legittimi liberi              ######')"
+py "print('##############################################################')"
+h1 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8810 --duration 55 --pps-min 5 --pps-max 34 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 14 --sleep-jitter 0.03 &
+h2 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8811 --duration 55 --pps-min 6 --pps-max 38 --payload-min 200 --payload-max 1400 --burst-prob 0.07 --burst-min 4 --burst-max 14 --sleep-jitter 0.035 &
+h8 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8814 --duration 55 --pps-min 5 --pps-max 32 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 12 --sleep-jitter 0.045 &
+h3 timeout 60 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9910 --duration 55 --pps-min 200 --pps-max 420 --payload-min 300 --payload-max 800 --burst-prob 0.18 --burst-min 20 --burst-max 60 --sleep-jitter 0.002 &
+py "print('... attacco singolo + legittimi in corso, attendo mitigazione 30s ...')"
+sh sleep 30
+py "print('--- PING DI CONTROLLO FASE 2 ---')"
+py "print('--- h3 (ATTACCANTE) atteso 100% loss ---')"
+h3 ping -c 2 -W 2 10.0.0.4
+py "print('--- h1 (LEGITTIMO) atteso 0% loss ---')"
+h1 ping -c 2 -W 2 10.0.0.4
+py "print('--- h2 (LEGITTIMO) atteso 0% loss ---')"
+h2 ping -c 2 -W 2 10.0.0.4
+py "print('--- h8 (LEGITTIMO) atteso 0% loss ---')"
+h8 ping -c 2 -W 2 10.0.0.4
+py "print('--- regole drop dopo FASE 2 (atteso solo 10.0.0.3) ---')"
+sh ovs-ofctl -O OpenFlow13 dump-flows s1 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s2 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s3 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s4 | grep -i drop
+py "print('=== FINE FASE 2. Fermo il traffico e pausa 15s ===')"
+h1 pkill -f udp_realistic_sender
+h2 pkill -f udp_realistic_sender
+h8 pkill -f udp_realistic_sender
+h3 pkill -f udp_realistic_sender
+sh sleep 15
+
+py "print(' ')"
+py "print('##############################################################')"
+py "print('###  FASE 3  -  ATTACCO DISTRIBUITO (h3,h5,h9,h12)  ##########')"
+py "print('###  atteso: 4 attaccanti bloccati, legittimi liberi   #######')"
+py "print('##############################################################')"
+h1 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8820 --duration 65 --pps-min 5 --pps-max 34 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 14 --sleep-jitter 0.03 &
+h2 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8821 --duration 65 --pps-min 6 --pps-max 38 --payload-min 200 --payload-max 1400 --burst-prob 0.07 --burst-min 4 --burst-max 14 --sleep-jitter 0.035 &
+h8 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 8824 --duration 65 --pps-min 5 --pps-max 32 --payload-min 200 --payload-max 1400 --burst-prob 0.06 --burst-min 4 --burst-max 12 --sleep-jitter 0.045 &
+h3 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9920 --duration 65 --pps-min 12 --pps-max 38 --payload-min 300 --payload-max 800 --burst-prob 0.02 --burst-min 2 --burst-max 5 --sleep-jitter 0.002 &
+h5 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9921 --duration 65 --pps-min 10 --pps-max 36 --payload-min 300 --payload-max 800 --burst-prob 0.01 --burst-min 2 --burst-max 5 --sleep-jitter 0.0015 &
+h9 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9922 --duration 65 --pps-min 12 --pps-max 38 --payload-min 300 --payload-max 800 --burst-prob 0.02 --burst-min 2 --burst-max 5 --sleep-jitter 0.0025 &
+h12 timeout 70 python3 /tmp/udp_realistic_sender.py --dst 10.0.0.4 --port 9923 --duration 65 --pps-min 11 --pps-max 37 --payload-min 300 --payload-max 800 --burst-prob 0.00 --burst-min 2 --burst-max 5 --sleep-jitter 0.001 &
+py "print('... attacco distribuito + legittimi in corso, attendo mitigazione 30s ...')"
+sh sleep 30
+py "print('--- PING DI CONTROLLO FASE 3 ---')"
+py "print('--- h3 (ATTACCANTE) atteso 100% loss ---')"
+h3 ping -c 2 -W 2 10.0.0.4
+py "print('--- h5 (ATTACCANTE) atteso 100% loss ---')"
+h5 ping -c 2 -W 2 10.0.0.4
+py "print('--- h9 (ATTACCANTE) atteso 100% loss ---')"
+h9 ping -c 2 -W 2 10.0.0.4
+py "print('--- h12 (ATTACCANTE) atteso 100% loss ---')"
+h12 ping -c 2 -W 2 10.0.0.4
+py "print('--- h1 (LEGITTIMO) atteso 0% loss ---')"
+h1 ping -c 2 -W 2 10.0.0.4
+py "print('--- h2 (LEGITTIMO) atteso 0% loss ---')"
+h2 ping -c 2 -W 2 10.0.0.4
+py "print('--- h8 (LEGITTIMO) atteso 0% loss ---')"
+h8 ping -c 2 -W 2 10.0.0.4
+py "print('--- regole drop dopo FASE 3 (attese 10.0.0.3/5/9/12) ---')"
+sh ovs-ofctl -O OpenFlow13 dump-flows s1 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s2 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s3 | grep -i drop
+sh ovs-ofctl -O OpenFlow13 dump-flows s4 | grep -i drop
+py "print(' ')"
+py "print('##############################################################')"
+py "print('###  TEST COMPLETATO - le tre fasi sono finite  ##############')"
+py "print('##############################################################')"
+
