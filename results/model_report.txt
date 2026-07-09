@@ -1,0 +1,56 @@
+==============================================================
+ REPORT MODELLO - DDoS detection (Random Forest)
+ Generato il: 2026-07-07 21:13:19
+ Rigenerato automaticamente da train_model.py
+==============================================================
+
+Righe attive (dopo pulizia): 3372
+  train: 2196   test: 1176
+Iperparametri scelti: {'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 150}
+Soglia decisionale scelta: 0.40
+
+--- Metriche sul test set ---
+accuracy : 0.972
+precision: 0.938
+recall   : 0.988
+f1       : 0.963
+
+--- Matrice di confusione (test) ---
+            pred_0  pred_1
+  reale_0      717      28   (legittimi)
+  reale_1        5     426   (attacchi)
+
+--- Classification report ---
+              precision    recall  f1-score   support
+
+           0       0.99      0.96      0.98       745
+           1       0.94      0.99      0.96       431
+
+    accuracy                           0.97      1176
+   macro avg       0.97      0.98      0.97      1176
+weighted avg       0.97      0.97      0.97      1176
+
+--- Confronto col baseline (la prova che il ML serve) ---
+Baseline  if(packet_rate >= 23.5):  F1 = 0.32
+Modello ML (Random Forest):              F1 = 0.963
+Un semplice if sul rate NON basta: 0.32 contro 0.963.
+
+--- Feature importance ---
+  delta_bytes              0.282
+  byte_rate                0.252
+  packet_rate              0.114
+  delta_packets            0.089
+  burst_score              0.082
+  pps_per_source           0.044
+  flow_to_dst_ratio        0.042
+  dst_total_byte_rate      0.034
+  dst_total_packet_rate    0.030
+  dst_unique_src_count     0.015
+  dst_active_flow_count    0.007
+  dst_cv_packet_rate       0.005
+  dst_std_packet_rate      0.004
+  ip_proto                 0.000
+  is_tcp                   0.000
+  is_udp                   0.000
+
+Feature usate (16): ['ip_proto', 'delta_packets', 'delta_bytes', 'packet_rate', 'byte_rate', 'burst_score', 'dst_unique_src_count', 'dst_total_packet_rate', 'dst_total_byte_rate', 'dst_active_flow_count', 'dst_std_packet_rate', 'dst_cv_packet_rate', 'is_tcp', 'is_udp', 'flow_to_dst_ratio', 'pps_per_source']
